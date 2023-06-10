@@ -8,6 +8,7 @@ class Bank:
 
     def __init__(self) -> None:
         self.bank_balance = 10000
+        self.bank_loan = 0
 
     def create_account(self):
         email = input("Enter your email: ")
@@ -31,22 +32,18 @@ class User(Bank):
         self.user_balance += amount
         self.bank_balance += amount
         print("\nYour balance: ", self.user_balance)
-        print("Bank balance: ", self.bank_balance)
-        print("Deposit successfully: ", amount)
-        print()
+        print("Deposit successfully.\n")
 
     def withdrawal(self, amount):
         if amount > self.user_balance:
-            print("Insufficient Balance!!")
+            print("\nInsufficient Balance!!\n")
         elif amount > self.bank_balance:
-            print("The Bank Is Bankrupt.")
+            print("\nThe Bank Is Bankrupt.\n")
         else:
             self.user_balance -= amount
             self.bank_balance -= amount
             print("\nYour balance: ", self.user_balance)
-            print("Bank balance: ", self.bank_balance)
-            print("Withdeawal successfully: ", amount)
-            print()
+            print("Withdeawal successfully\n")
 
     def check_balance(self):
         return self.user_balance
@@ -59,18 +56,19 @@ class User(Bank):
 
     def take_loan(self, amount):
         if amount > self.user_balance*2:
-            print("Insufficient Balance!!")
+            print("\nYou have not enough deposit!!\n")
         elif amount > self.bank_balance:
-            print("Bank has not enough money.")
+            print("\nBank has not enough money.\n")
         else:
             self.bank_balance -= amount
-            print("Your loan is successfully done.")
+            self.bank_loan += amount
+            print("\nYou got a loan successfully.\n")
 
 while True:
     bank = Bank()
     user = User()
 
-    print(f"\n{'*'*15}Welcome to Bank Of Phitron!{'*'*10}")
+    print(f"\n{'*'*15} Welcome to Bank Of Phitron! {'*'*10}")
     print("1. Create an account.\n2. Already have an account.\n3. Exit.")
     option = int(input("Choice an option: "))
 
@@ -82,7 +80,7 @@ while True:
         flag = 0
         if email == "admin@bank.com" and password == "admin":
             while True:
-                print(f"\n{'*'*15}Welcome Admin, to Bank Of Phitron!{'*'*10}")
+                print(f"\n{'*'*15} Welcome Admin, to Bank Of Phitron! {'*'*10}")
                 print("1. Check Total Balance.\n2. Check Total Loan.\n3. Off Loan Feature.\n4. Exit.\n")
                 choice = int(input("Choice an option: "))
                 if choice == 1:
@@ -102,7 +100,7 @@ while True:
                     break
             if flag:
                 while True:
-                    print(f"\n{'*'*15}Welcome to Bank Of Phitron!{'*'*10}")
+                    print(f"\n{'*'*15} Welcome to Bank Of Phitron! {'*'*10}")
                     print("1. Deposit Money.\n2. Withdrawal Money.\n3. Check Balance.\n4. Transfer Money.\n5. Check Transaction History.\n6. Take Loan From Bank\n7. Exit.\n")
                     choice = int(input("Choice an option: "))
                     if choice==1:
@@ -113,14 +111,17 @@ while True:
                         user.withdrawal(wdr_amount)
                     elif choice==3:
                         bal = user.check_balance()
-                        print(f"your total balance is {bal}")
+                        print(f"\nYour total balance is: {bal}/=\n")
                     elif choice==4:
-                        user.money_transfer()
+                        transfer_amount = int(input("Enter transfer amount: "))
+                        user.money_transfer(transfer_amount)
+                        # Not implemented
                     elif choice==5:
                         user.transaction_history()
+                        # Not implemented
                     elif choice==6:
-                        money = int(input("Enter loan amount: "))
-                        user.take_loan(money)
+                        loan_amount = int(input("Enter loan amount: "))
+                        user.take_loan(loan_amount)
                     elif choice==7:
                         break
                     else:
