@@ -1,9 +1,15 @@
-user_list =
-{
-    100:[
-        {'user_id': 100, 'email': 'asd', 'password': 'asd'},
-        {}
-    ],
-    101:[],
-    102:[],
-}
+user_id 101:
+[
+    {'user_id': 101, 'email': 'tomi', 'password': 'tomi'}, 
+    {'transaction_id': 10103, 'type': 'deposit', 'amount': 5000, 'balance': 8000}, 
+    {'transaction_id': 10104, 'type': 'withdrawal', 'amount': 2000, 'balance': 6000}, 
+    {'transaction_id': 10105, 'type': 'loan', 'amount': 3000, 'balance': 9000}
+] 
+sent -> 3000                                           
+reciver_id 100:
+[
+    {'user_id': 100, 'email': 'ami', 'password': 'ami'}, 
+    {'transaction_id': 10100, 'type': 'deposit', 'amount': 2000, 'balance': 2000}, 
+    {'transaction_id': 10101, 'type': 'withdrawal', 'amount': 1000, 'balance': 1000}, 
+    {'transaction_id': 10102, 'type': 'loan', 'amount': 2000, 'balance': 3000}
+]

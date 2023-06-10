@@ -1,7 +1,13 @@
 """
-Admin E-Mail   : admin@bank.com
-Admin Password : admin
+=========================================
+|     Admin User ID ------ : 12345      |
+|     Admin Password ----- : admin      |
+|     Bank Initial Balance : 5000       |
+|     Bank Initial Loan -- : 0          |
+|     Users Initial Balance: 5000       |
+=========================================
 """
+
 class Person:
     id_counter = 100
     def __init__(self, email, password) -> None:
@@ -17,29 +23,30 @@ class Bank:
     def __init__(self) -> None:
         Bank.bank_info['bank_balance'] = 5000
         Bank.bank_info['bank_loan'] = 0
-        # self.bank_balance = 10000
-        # self.bank_loan = 0
+        Bank.bank_info['loan_feature'] = True
 
     def create_account(self):
         email = input("Enter your email: ")
         password = input("Enter your password: ")
         self.new_user = vars(Person(email, password))
         id = self.new_user['user_id']
+        if id not in self.bank_info:
+            self.bank_info[id] = 0
         if id not in self.user_list:
             self.user_list[id] = []
         self.user_list[id].append(self.new_user)
-        print(self.user_list)
         print("\n\t***Account Created Successfully.")
         print("\t***Your user id: ", id, "\n")
 
     def total_balance(self):
-        return self.bank_balance
+        print("\n\t*** Bank Available Balance: ", self.bank_info['bank_balance'], "\n")
     
     def total_loan(self):
-        return self.bank_loan
+        print("\n\t*** Bank Total Loan: ", self.bank_info['bank_loan'], "\n")
     
     def off_loan_feature(self):
-        return False
+        self.bank_info['loan_feature'] = False
+        print("\n\t*** Loan feature Off Successfully. ***\n")
 
 class Transaction:
     id_counter = 10100
@@ -50,7 +57,13 @@ class Transaction:
         self.amount = amount
         if type == 'deposit':
             Transaction.balance += amount
+        elif type == 'loan':
+            Transaction.balance += amount
+        elif type == 'recive':
+            Transaction.balance += amount
         elif type == 'withdrawal':
+            Transaction.balance -= amount
+        elif type == 'send':
             Transaction.balance -= amount
         self.balance = Transaction.balance
         Transaction.id_counter += 1
@@ -58,7 +71,6 @@ class Transaction:
 class User(Bank):
     def __init__(self) -> None:
         super().__init__()
-        self.user_balance = 0
 
     def deposit(self, user_id, amount):
         # transaction history
@@ -72,8 +84,6 @@ class User(Bank):
             self.bank_info[user_id] += amount
             self.bank_info['bank_balance'] += amount
         print("\n\t***Deposit successfully.***")
-        print("\tYour Current Balance: ", self.bank_info[user_id],"\n")
-        print("\tBank Current Balance: ", self.bank_info['bank_balance'],"\n")
 
     def withdrawal(self, user_id, amount):
         # bank info
@@ -87,32 +97,60 @@ class User(Bank):
             self.bank_info[user_id] -= amount
             self.bank_info['bank_balance'] -= amount
             print("\n\t***Withdrawal successfully.***")
-            print("\tYour Current Balance: ", self.bank_info[user_id],"\n")
-            print("\tBank Current Balance: ", self.bank_info['bank_balance'],"\n")
             # transaction history
             info = Transaction('withdrawal', amount)
             self.user_list[user_id].append(vars(info))
 
-    def check_balance(self):
-        return self.user_balance
-
-    def money_transfer(self):
-        pass
-
-    def transaction_history(self):
-        pass
-
-    def take_loan(self, amount):
-        if amount > self.user_balance*2:
-            print("\nYou have not enough deposit!!\n")
-        elif amount > self.bank_balance:
-            print("\nBank has not enough money.\n")
+    def check_balance(self, user_id):
+        if user_id not in self.bank_info:
+            print("\n\t*** Balance not found! ***\n")
+            print("\n\t*** Please Deposit First! ***\n")
         else:
-            self.bank_balance -= amount
-            self.bank_loan += amount
-            print("bank balance: ", self.bank_balance)
-            print("bank loan: ", self.bank_loan)
-            print("\nYou got a loan successfully.\n")
+            print("\n\t***Your Current Balance: ", self.bank_info[user_id]," ***\n")
+
+    def money_transfer(self, user_id, reciver_id, amount):
+        if user_id not in self.bank_info:
+            print("\n\tuser_id not found!")
+        elif reciver_id not in self.bank_info:
+            print("\n\treciver_id not found!")
+        else:
+            # sender bank info
+            self.bank_info[user_id] -= amount
+            # sender transaction history
+            info = Transaction('send', amount)
+            self.user_list[user_id].append(vars(info))
+            # reciver bank info
+            self.bank_info[reciver_id] += amount
+            # reciver transaction history
+            info = Transaction('recive', amount)
+            self.user_list[reciver_id].append(vars(info))
+            print("\n\t*** Money Transferred Successfully. ***\n")
+
+    def transaction_history(self, user_id):
+        length = len(self.user_list[user_id])
+        print("\n\t****Your Transaction History: ")
+        for i in range(1, length):
+            my_dict = self.user_list[user_id][i]
+            str_repr = ', '.join([f"{key}: {value}" for key, value in my_dict.items()])
+            print("\t", str_repr)
+        print()
+
+    def take_loan(self, user_id, amount):
+        val = self.bank_info[user_id]
+        if amount > val*2:
+            print("\n\t***You have not enough deposit!***\n")
+        elif amount > self.bank_info['bank_balance']:
+            print("\n\t***Bank has not enough money.***\n")
+        else:
+            self.bank_info['bank_balance'] -= amount
+            self.bank_info['bank_loan'] += amount
+            self.bank_info[user_id] += amount
+            print("\nBank remaining balance: ", self.bank_info['bank_balance'])
+            print("Bank total loan: ", self.bank_info['bank_loan'])
+            print("\n\t***You got a loan successfully.***\n")
+            # transaction history
+            info = Transaction('loan', amount)
+            self.user_list[user_id].append(vars(info))
 
 while True:
     bank = Bank()
@@ -121,16 +159,14 @@ while True:
     print(f"\n{'*'*15} Welcome to Bank Of Phitron! {'*'*10}")
     print("1. Create an account.\n2. Already have an account.\n3. Exit.")
     option = int(input("Choice an option: "))
-    loan_feature = True
+    
     if option == 1:
         bank.create_account()
     elif option == 2:
-        user_id = int(input("Enter your User ID: "))
+        user_id = input("Enter your User ID: ")
         password = input("Enter your password: ")
         flag = 0
-        # print(bank.user_list[user_id][0][password])
-        pword = bank.user_list[user_id][0]['password']
-        if id == 12345 and password == "admin":
+        if user_id == "12345" and password == "admin":
             while True:
                 print(f"\n{'*'*15} Welcome Admin, to Bank Of Phitron! {'*'*10}")
                 print("1. Create an account.\n2. Check Total Balance.\n3. Check Total Loan.\n4. Off Loan Feature.\n5. Exit.\n")
@@ -138,19 +174,18 @@ while True:
                 if choice == 1:
                     bank.create_account()
                 elif choice == 2:
-                    tot_bal = bank.total_balance()
-                    print("Total Balance: ", tot_bal)
+                    bank.total_balance()
                 elif choice == 3:
-                    loan = bank.total_loan()
-                    print("Total Loan: ", loan)
+                    bank.total_loan()
                 elif choice == 4:
-                    loan_feature = bank.off_loan_feature()
-                    print("Loan feature Off Successfully")
+                    bank.off_loan_feature()
                 elif choice == 5:
                     break
                 else:
                     print("Choice a valid option")
         else:
+            # user password validation
+            pword = bank.user_list[user_id][0]['password']
             if user_id not in bank.user_list:
                 print("\n\t***You are not a valid user.\n")
             elif pword == password:
@@ -165,21 +200,19 @@ while True:
                         wdr_amount = int(input("Enter withdrawal amount: "))
                         user.withdrawal(user_id, wdr_amount)
                     elif choice==3:
-                        bal = user.check_balance()
-                        print(f"\nYour total balance is: {bal}/=\n")
+                        user.check_balance(user_id)
                     elif choice==4:
+                        reciver_id = int(input("Enter reciver id: "))
                         transfer_amount = int(input("Enter transfer amount: "))
-                        user.money_transfer(transfer_amount)
-                        # Not implemented
+                        user.money_transfer(user_id, reciver_id, transfer_amount)
                     elif choice==5:
-                        user.transaction_history()
-                        # Not implemented
+                        user.transaction_history(user_id)
                     elif choice==6:
-                        if loan_feature:
+                        if bank.bank_info['loan_feature']:
                             loan_amount = int(input("Enter loan amount: "))
-                            user.take_loan(loan_amount)
+                            user.take_loan(user_id, loan_amount)
                         else:
-                            print("\nLending is temporarily suspended.\n")
+                            print("\n\t***Lending is temporarily suspended.***\n")
                     elif choice==7:
                         break
                     else:
