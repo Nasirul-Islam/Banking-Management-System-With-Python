@@ -1,0 +1,9 @@
+user_list =
+{
+    100:[
+        {'user_id': 100, 'email': 'asd', 'password': 'asd'},
+        {}
+    ],
+    101:[],
+    102:[],
+}
