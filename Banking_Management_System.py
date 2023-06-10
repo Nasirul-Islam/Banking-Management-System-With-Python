@@ -67,34 +67,31 @@ class User(Bank):
         # bank info
         if user_id not in self.bank_info:
             self.bank_info[user_id] = amount
+            self.bank_info['bank_balance'] += amount
         else:
             self.bank_info[user_id] += amount
+            self.bank_info['bank_balance'] += amount
         print("\n\t***Deposit successfully.***")
         print("\tYour Current Balance: ", self.bank_info[user_id],"\n")
+        print("\tBank Current Balance: ", self.bank_info['bank_balance'],"\n")
 
     def withdrawal(self, user_id, amount):
-        # transaction history
-        info = Transaction('withdrawal', amount)
-        self.user_list[user_id].append(vars(info))
         # bank info
         if user_id not in self.bank_info:
-            self.bank_info[user_id] = amount
+            print("\n\t***Insufficient Balance!***\n")
+        elif amount > self.bank_info[user_id]:
+            print("\n\t***Insufficient Balance!!***\n")
+        elif amount > self.bank_info['bank_balance']:
+            print("\n\t***The Bank Is Bankrupt.***\n")
         else:
             self.bank_info[user_id] -= amount
-        print("\n\t***Withdrawal successfully.***")
-        print("\tYour Current Balance: ", self.bank_info[user_id],"\n")
-
-        #-------------------------
-        # print(self.user_list)
-        # if amount > self.user_balance:
-        #     print("\nInsufficient Balance!!\n")
-        # elif amount > self.bank_balance:
-        #     print("\nThe Bank Is Bankrupt.\n")
-        # else:
-        #     self.user_balance -= amount
-        #     self.bank_balance -= amount
-        #     print("\nYour balance: ", self.user_balance)
-        #     print("Withdeawal successfully\n")
+            self.bank_info['bank_balance'] -= amount
+            print("\n\t***Withdrawal successfully.***")
+            print("\tYour Current Balance: ", self.bank_info[user_id],"\n")
+            print("\tBank Current Balance: ", self.bank_info['bank_balance'],"\n")
+            # transaction history
+            info = Transaction('withdrawal', amount)
+            self.user_list[user_id].append(vars(info))
 
     def check_balance(self):
         return self.user_balance
@@ -165,7 +162,7 @@ while True:
                         dps_amount = int(input("Enter deposit amount: "))
                         user.deposit(user_id, dps_amount)
                     elif choice==2:
-                        wdr_amount = int(input("Enter deposit amount: "))
+                        wdr_amount = int(input("Enter withdrawal amount: "))
                         user.withdrawal(user_id, wdr_amount)
                     elif choice==3:
                         bal = user.check_balance()
