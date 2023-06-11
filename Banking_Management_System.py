@@ -1,4 +1,10 @@
 """
+*****************************************
+*   Author  : nasirul_866               *
+*   Created : 10-06-2023	10:04:19    *
+*****************************************
+Project Name : Banking Management System.
+Required Info:
 =========================================
 |     Admin User ID ------ : 12345      |
 |     Admin Password ----- : admin      |
@@ -7,7 +13,6 @@
 |     Users Initial Balance: 0          |
 =========================================
 """
-
 class Person:
     id_counter = 100
     def __init__(self, email, password) -> None:
@@ -22,9 +27,6 @@ class Bank:
 
     def __init__(self) -> None:
         pass
-        # Bank.bank_info['bank_balance'] = 5000
-        # Bank.bank_info['bank_loan'] = 0
-        # Bank.bank_info['loan_feature'] = True
 
     def create_account(self):
         email = input("Enter your email: ")
@@ -93,8 +95,6 @@ class User(Bank):
             self.bank_info[user_id] += amount
             self.bank_info['bank_balance'] += amount
         print("\n\t***Deposit successfully.***")
-        print("\n\tBank Balance: ", self.bank_info['bank_balance'])
-        print(self.bank_info)
 
     def withdrawal(self, user_id, amount):
         # bank info
@@ -112,7 +112,6 @@ class User(Bank):
             # transaction history
             info = Transaction('withdrawal', amount, bal)
             self.user_list[user_id].append(vars(info))
-            print(self.bank_info)
 
     def check_balance(self, user_id):
         if user_id not in self.bank_info:
@@ -161,8 +160,6 @@ class User(Bank):
             self.bank_info['bank_balance'] -= amount
             self.bank_info['bank_loan'] += amount
             self.bank_info[user_id] += amount
-            print("\nBank remaining balance: ", self.bank_info['bank_balance'])
-            print("Bank total loan: ", self.bank_info['bank_loan'])
             print("\n\t***You got a loan successfully.***\n")
             # transaction history
             info = Transaction('loan', amount, bal)
@@ -240,3 +237,4 @@ while True:
     else:
         print("Choice a valid option")
 
+# ======================== The End ============================= #
