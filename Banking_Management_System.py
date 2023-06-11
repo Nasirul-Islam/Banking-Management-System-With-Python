@@ -1,7 +1,7 @@
 """
 *****************************************
-*   Author  : nasirul_866               *
-*   Created : 10-06-2023	10:04:19    *
+*   Author  : nasirul866               *
+*   Created : 10-06-2023   10:04:19    *
 *****************************************
 Project Name : Banking Management System.
 Required Info:
