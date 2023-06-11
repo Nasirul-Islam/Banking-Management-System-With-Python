@@ -4,7 +4,7 @@
 |     Admin Password ----- : admin      |
 |     Bank Initial Balance : 5000       |
 |     Bank Initial Loan -- : 0          |
-|     Users Initial Balance: 5000       |
+|     Users Initial Balance: 0          |
 =========================================
 """
 
@@ -21,15 +21,22 @@ class Bank:
     bank_info = {}
 
     def __init__(self) -> None:
-        Bank.bank_info['bank_balance'] = 5000
-        Bank.bank_info['bank_loan'] = 0
-        Bank.bank_info['loan_feature'] = True
+        pass
+        # Bank.bank_info['bank_balance'] = 5000
+        # Bank.bank_info['bank_loan'] = 0
+        # Bank.bank_info['loan_feature'] = True
 
     def create_account(self):
         email = input("Enter your email: ")
         password = input("Enter your password: ")
         self.new_user = vars(Person(email, password))
         id = self.new_user['user_id']
+        if 'bank_balance' not in self.bank_info:
+            self.bank_info['bank_balance'] = 5000
+        if 'bank_loan' not in self.bank_info:
+            self.bank_info['bank_loan'] = 0
+        if 'loan_feature' not in self.bank_info:
+            self.bank_info['loan_feature'] = True
         if id not in self.bank_info:
             self.bank_info[id] = 0
         if id not in self.user_list:
@@ -39,6 +46,7 @@ class Bank:
         print("\t***Your user id: ", id, "\n")
 
     def total_balance(self):
+        print(self.bank_info)
         print("\n\t*** Bank Available Balance: ", self.bank_info['bank_balance'], "\n")
     
     def total_loan(self):
@@ -51,30 +59,31 @@ class Bank:
 class Transaction:
     id_counter = 10100
     balance = 0
-    def __init__(self, type, amount) -> None:
+    def __init__(self, type, amount, bal) -> None:
         self.transaction_id = Transaction.id_counter
         self.type = type
         self.amount = amount
         if type == 'deposit':
-            Transaction.balance += amount
+            Transaction.balance = bal + amount
         elif type == 'loan':
-            Transaction.balance += amount
+            Transaction.balance = bal + amount
         elif type == 'recive':
-            Transaction.balance += amount
+            Transaction.balance = bal + amount
         elif type == 'withdrawal':
-            Transaction.balance -= amount
+            Transaction.balance = bal - amount
         elif type == 'send':
-            Transaction.balance -= amount
-        self.balance = Transaction.balance
+            Transaction.balance = bal - amount
         Transaction.id_counter += 1
+        self.balance = Transaction.balance
 
 class User(Bank):
     def __init__(self) -> None:
         super().__init__()
 
     def deposit(self, user_id, amount):
+        bal = self.bank_info[user_id]
         # transaction history
-        info = Transaction('deposit', amount)
+        info = Transaction('deposit', amount, bal)
         self.user_list[user_id].append(vars(info))
         # bank info
         if user_id not in self.bank_info:
@@ -84,6 +93,8 @@ class User(Bank):
             self.bank_info[user_id] += amount
             self.bank_info['bank_balance'] += amount
         print("\n\t***Deposit successfully.***")
+        print("\n\tBank Balance: ", self.bank_info['bank_balance'])
+        print(self.bank_info)
 
     def withdrawal(self, user_id, amount):
         # bank info
@@ -94,12 +105,14 @@ class User(Bank):
         elif amount > self.bank_info['bank_balance']:
             print("\n\t***The Bank Is Bankrupt.***\n")
         else:
+            bal = self.bank_info[user_id]
             self.bank_info[user_id] -= amount
             self.bank_info['bank_balance'] -= amount
             print("\n\t***Withdrawal successfully.***")
             # transaction history
-            info = Transaction('withdrawal', amount)
+            info = Transaction('withdrawal', amount, bal)
             self.user_list[user_id].append(vars(info))
+            print(self.bank_info)
 
     def check_balance(self, user_id):
         if user_id not in self.bank_info:
@@ -107,6 +120,7 @@ class User(Bank):
             print("\n\t*** Please Deposit First! ***\n")
         else:
             print("\n\t***Your Current Balance: ", self.bank_info[user_id]," ***\n")
+            print(self.bank_info)
 
     def money_transfer(self, user_id, reciver_id, amount):
         if user_id not in self.bank_info:
@@ -114,15 +128,16 @@ class User(Bank):
         elif reciver_id not in self.bank_info:
             print("\n\treciver_id not found!")
         else:
+            bal = self.bank_info[user_id]
             # sender bank info
             self.bank_info[user_id] -= amount
             # sender transaction history
-            info = Transaction('send', amount)
+            info = Transaction('send', amount, bal)
             self.user_list[user_id].append(vars(info))
             # reciver bank info
             self.bank_info[reciver_id] += amount
             # reciver transaction history
-            info = Transaction('recive', amount)
+            info = Transaction('recive', amount, bal)
             self.user_list[reciver_id].append(vars(info))
             print("\n\t*** Money Transferred Successfully. ***\n")
 
@@ -142,6 +157,7 @@ class User(Bank):
         elif amount > self.bank_info['bank_balance']:
             print("\n\t***Bank has not enough money.***\n")
         else:
+            bal = self.bank_info[user_id]
             self.bank_info['bank_balance'] -= amount
             self.bank_info['bank_loan'] += amount
             self.bank_info[user_id] += amount
@@ -149,7 +165,7 @@ class User(Bank):
             print("Bank total loan: ", self.bank_info['bank_loan'])
             print("\n\t***You got a loan successfully.***\n")
             # transaction history
-            info = Transaction('loan', amount)
+            info = Transaction('loan', amount, bal)
             self.user_list[user_id].append(vars(info))
 
 while True:
@@ -182,9 +198,9 @@ while True:
                 elif choice == 5:
                     break
                 else:
-                    print("Choice a valid option")
+                    print("\n\t***Choice a valid option!***\n")
         else:
-            # user password validation
+            user_id = int(user_id)
             pword = bank.user_list[user_id][0]['password']
             if user_id not in bank.user_list:
                 print("\n\t***You are not a valid user.\n")
@@ -224,9 +240,3 @@ while True:
     else:
         print("Choice a valid option")
 
-
-""""
-if member['email'] == email and member['password']==password:
-                    flag=1
-                    break
-"""
