@@ -48,7 +48,6 @@ class Bank:
         print("\t***Your user id: ", id, "\n")
 
     def total_balance(self):
-        print(self.bank_info)
         print("\n\t*** Bank Available Balance: ", self.bank_info['bank_balance'], "\n")
     
     def total_loan(self):
@@ -119,13 +118,12 @@ class User(Bank):
             print("\n\t*** Please Deposit First! ***\n")
         else:
             print("\n\t***Your Current Balance: ", self.bank_info[user_id]," ***\n")
-            print(self.bank_info)
 
     def money_transfer(self, user_id, reciver_id, amount):
         if user_id not in self.bank_info:
-            print("\n\tuser_id not found!")
+            print("\n\tUser id not found!")
         elif reciver_id not in self.bank_info:
-            print("\n\treciver_id not found!")
+            print("\n\tReciver id not found!")
         else:
             bal = self.bank_info[user_id]
             # sender bank info
@@ -171,70 +169,86 @@ while True:
 
     print(f"\n{'*'*15} Welcome to Bank Of Phitron! {'*'*10}")
     print("1. Create an account.\n2. Already have an account.\n3. Exit.")
-    option = int(input("Choice an option: "))
     
-    if option == 1:
-        bank.create_account()
-    elif option == 2:
-        user_id = input("Enter your User ID: ")
-        password = input("Enter your password: ")
-        flag = 0
-        if user_id == "12345" and password == "admin":
-            while True:
-                print(f"\n{'*'*15} Welcome Admin, to Bank Of Phitron! {'*'*10}")
-                print("1. Create an account.\n2. Check Total Balance.\n3. Check Total Loan.\n4. Off Loan Feature.\n5. Exit.\n")
-                choice = int(input("Choice an option: "))
-                if choice == 1:
-                    bank.create_account()
-                elif choice == 2:
-                    bank.total_balance()
-                elif choice == 3:
-                    bank.total_loan()
-                elif choice == 4:
-                    bank.off_loan_feature()
-                elif choice == 5:
-                    break
-                else:
-                    print("\n\t***Choice a valid option!***\n")
-        else:
-            user_id = int(user_id)
-            pword = bank.user_list[user_id][0]['password']
-            if user_id not in bank.user_list:
-                print("\n\t***You are not a valid user.\n")
-            elif pword == password:
+    option = 0
+    try:
+        option = int(input("Choice an option: "))
+    except:
+        print("\n\t***Choice a valid option!***\n")
+    finally:
+        if option == 1:
+            bank.create_account()
+        elif option == 2:
+            user_id = input("Enter your User ID: ")
+            password = input("Enter your password: ")
+            flag = 0
+            if user_id == "12345" and password == "admin":
                 while True:
-                    print(f"\n{'*'*15} Welcome to Bank Of Phitron! {'*'*10}")
-                    print("1. Deposit Money.\n2. Withdrawal Money.\n3. Check Balance.\n4. Transfer Money.\n5. Check Transaction History.\n6. Take Loan From Bank\n7. Exit.\n")
-                    choice = int(input("Choice an option: "))
-                    if choice==1:
-                        dps_amount = int(input("Enter deposit amount: "))
-                        user.deposit(user_id, dps_amount)
-                    elif choice==2:
-                        wdr_amount = int(input("Enter withdrawal amount: "))
-                        user.withdrawal(user_id, wdr_amount)
-                    elif choice==3:
-                        user.check_balance(user_id)
-                    elif choice==4:
-                        reciver_id = int(input("Enter reciver id: "))
-                        transfer_amount = int(input("Enter transfer amount: "))
-                        user.money_transfer(user_id, reciver_id, transfer_amount)
-                    elif choice==5:
-                        user.transaction_history(user_id)
-                    elif choice==6:
-                        if bank.bank_info['loan_feature']:
-                            loan_amount = int(input("Enter loan amount: "))
-                            user.take_loan(user_id, loan_amount)
+                    print(f"\n{'*'*15} Welcome Admin, to Bank Of Phitron! {'*'*10}")
+                    print("1. Create an account.\n2. Check Total Balance.\n3. Check Total Loan.\n4. Off Loan Feature.\n5. Exit.\n")
+                    choice = 0
+                    try:
+                        choice = int(input("Choice an option: "))
+                    except:
+                        print("\n\t***Choice a valid option!***\n")
+                    finally:
+                        if choice == 1:
+                            bank.create_account()
+                        elif choice == 2:
+                            bank.total_balance()
+                        elif choice == 3:
+                            bank.total_loan()
+                        elif choice == 4:
+                            bank.off_loan_feature()
+                        elif choice == 5:
+                            break
                         else:
-                            print("\n\t***Lending is temporarily suspended.***\n")
-                    elif choice==7:
-                        break
-                    else:
-                        print("Choice a valid option")
+                            print("\n\t***Choice a valid option!***\n")
             else:
-                print("\n\t***Wrong Password!***\n")
-    elif option == 3:
-        break
-    else:
-        print("Choice a valid option")
+                user_id = int(user_id)
+                if user_id not in bank.user_list:
+                    print("\n\t***You are not a valid user.\n")
+                else:
+                    pword = bank.user_list[user_id][0]['password']
+                    if pword == password:
+                        while True:
+                            print(f"\n{'*'*15} Welcome to Bank Of Phitron! {'*'*10}")
+                            print("1. Deposit Money.\n2. Withdrawal Money.\n3. Check Balance.\n4. Transfer Money.\n5. Check Transaction History.\n6. Take Loan From Bank\n7. Exit.\n")
+                            choice = 0
+                            try:
+                                choice = int(input("Choice an option: "))
+                            except:
+                                print("\n\t***Choice a valid option!***\n")
+                            finally:
+                                if choice==1:
+                                    dps_amount = int(input("Enter deposit amount: "))
+                                    user.deposit(user_id, dps_amount)
+                                elif choice==2:
+                                    wdr_amount = int(input("Enter withdrawal amount: "))
+                                    user.withdrawal(user_id, wdr_amount)
+                                elif choice==3:
+                                    user.check_balance(user_id)
+                                elif choice==4:
+                                    reciver_id = int(input("Enter reciver id: "))
+                                    transfer_amount = int(input("Enter transfer amount: "))
+                                    user.money_transfer(user_id, reciver_id, transfer_amount)
+                                elif choice==5:
+                                    user.transaction_history(user_id)
+                                elif choice==6:
+                                    if bank.bank_info['loan_feature']:
+                                        loan_amount = int(input("Enter loan amount: "))
+                                        user.take_loan(user_id, loan_amount)
+                                    else:
+                                        print("\n\t***Lending is temporarily suspended.***\n")
+                                elif choice==7:
+                                    break
+                                else:
+                                    print("Choice a valid option")
+                    else:
+                        print("\n\t***Wrong Password!***\n")
+        elif option == 3:
+            break
+        else:
+            print("\n\t***Choice a valid option")
 
 # ======================== The End ============================= #
